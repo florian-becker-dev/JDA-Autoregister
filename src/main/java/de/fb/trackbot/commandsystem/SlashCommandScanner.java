@@ -8,6 +8,9 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
+import org.reflections.util.ConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -30,6 +33,8 @@ import java.util.*;
  */
 public class SlashCommandScanner {
 
+    private static final Logger logger = LoggerFactory.getLogger(SlashCommandScanner.class);
+
     /** Map storing command names linked to their executable Methods. */
     private static final Map<String, Method> commandMethods = new HashMap<>();
 
@@ -43,7 +48,7 @@ public class SlashCommandScanner {
     private static boolean listenerRegistered = false;
 
     /**
-     * Scans the package {@code de.fb.trackbot} for methods annotated with {@link SlashCommand}.
+     * Scans the project for methods annotated with {@link SlashCommand}.
      * Discovered commands are built and sent to Discord globally.
      *
      * @param jda The JDA instance used to register the commands and the listener.
@@ -52,7 +57,11 @@ public class SlashCommandScanner {
      */
     public static void registerMethods(JDA jda) {
 
-        Reflections reflections = new Reflections("de.fb.trackbot", Scanners.MethodsAnnotated);
+        logger.debug("starting global scan for SlashCommands");
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .forPackage("")
+                .addScanners(Scanners.MethodsAnnotated)
+        );
         Set<Method> annotatedMethods = reflections.getMethodsAnnotatedWith(SlashCommand.class);
 
         List<SlashCommandData> commandDataList = new ArrayList<>();
@@ -93,11 +102,14 @@ public class SlashCommandScanner {
                 commandDataList.add(commandData);
 
             } catch (Exception e) {
-                throw new RuntimeException("Failed to instantiate command class for: " + method.getName(), e);
+               throw new IllegalStateException("Failed to create command class for " + method.getName());
             }
         });
 
-        jda.updateCommands().addCommands(commandDataList).queue();
+        jda.updateCommands().addCommands(commandDataList).queue(
+                success -> logger.info("{} Commands successfully registered", commandMethods.size()),
+                error -> logger.error("JDA update failed")
+        );
 
         if(!listenerRegistered){
             jda.addEventListener(new SlashCommandListener());
@@ -132,8 +144,7 @@ public class SlashCommandScanner {
                     method.invoke(instance, event);
 
                 } catch (Exception e) {
-                    System.err.println("Error executing command: " + name);
-                    e.printStackTrace();
+                    logger.error("Error executing command: {}", name, e);
                 }
             }
         }

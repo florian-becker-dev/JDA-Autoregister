@@ -17,4 +17,5 @@ public class BotStarter {
 
         SlashCommandScanner.registerMethods(jda);
     }
+
 }
