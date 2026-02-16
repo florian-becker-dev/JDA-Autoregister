@@ -3,7 +3,6 @@ package de.fb.trackbot.commandsystem;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.reflections.Reflections;
@@ -12,9 +11,10 @@ import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import java.lang.reflect.Method;
 import java.util.*;
-//TODO add logging with logging framework
+
 /**
  * Automated scanner for Discord Slash Commands using Reflection.
  * <p>
@@ -81,6 +81,7 @@ public class SlashCommandScanner {
             String name = annotation.command();
             String description = annotation.description();
             Class<?> declearingClass = method.getDeclaringClass();
+            Option[] options = annotation.options();
 
             try {
                 Object instance = instanceCache.get(declearingClass);
@@ -95,9 +96,9 @@ public class SlashCommandScanner {
 
                 SlashCommandData commandData = Commands.slash(name, description);
 
-                // Option Registration Logic
-                addOptionIfPresent(commandData, annotation.parameter1(), annotation.parameter1Description(), annotation.parameter1Required());
-                addOptionIfPresent(commandData, annotation.parameter2(), annotation.parameter2Description(), annotation.parameter2Required());
+                for (Option option : options) {
+                    commandData.addOption(option.optionType(), option.name(), option.description(), option.required());
+                }
 
                 commandDataList.add(commandData);
 
@@ -114,15 +115,6 @@ public class SlashCommandScanner {
         if(!listenerRegistered){
             jda.addEventListener(new SlashCommandListener());
             listenerRegistered = true;
-        }
-    }
-
-    /**
-     * Helper method to reduce boilerplate when adding command options.
-     */
-    private static void addOptionIfPresent(SlashCommandData data, String name, String desc, boolean required) {
-        if (!name.isEmpty()) {
-            data.addOption(OptionType.STRING, name, desc, required);
         }
     }
 
