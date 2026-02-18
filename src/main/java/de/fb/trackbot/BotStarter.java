@@ -20,7 +20,9 @@ public class BotStarter {
         JDA jda = JDABuilder.createLight(TOKEN, EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
                 .build();
 
-        SlashCommandScanner.registerMethods(jda);
+
+
+
     }
 
     @SlashCommand(
