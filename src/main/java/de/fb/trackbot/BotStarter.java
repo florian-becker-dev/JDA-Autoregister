@@ -1,5 +1,6 @@
 package de.fb.trackbot;
 
+import de.fb.trackbot.commandsystem.Choice;
 import de.fb.trackbot.commandsystem.Option;
 import de.fb.trackbot.commandsystem.SlashCommand;
 import de.fb.trackbot.commandsystem.SlashCommandScanner;
@@ -20,16 +21,17 @@ public class BotStarter {
         JDA jda = JDABuilder.createLight(TOKEN, EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
                 .build();
 
-
-
-
     }
 
     @SlashCommand(
             command = "ping",
             description = "returns pong",
             options = {
-                    @Option(name = "olaf", description = "OLF", optionType = OptionType.STRING)
+                    @Option(name = "olaf", description = "OLF", optionType = OptionType.STRING,
+                            choices = {
+                                @Choice(name = "Name", value = "Value"),
+                                @Choice(name = "Rüdiger", value = "2")
+                        })
             })
     public void nio(SlashCommandInteractionEvent event){
         String a = Objects.requireNonNull(event.getOption("olaf")).getAsString();

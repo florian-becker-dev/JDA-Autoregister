@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Automated scanner for Discord Slash Commands using Reflection.
@@ -35,13 +36,13 @@ public class SlashCommandScanner {
     private final Logger logger = LoggerFactory.getLogger(SlashCommandScanner.class);
 
     /** Map storing command names linked to their executable Methods. */
-    private final Map<String, Method> commandMethods = new HashMap<>();
+    private final Map<String, Method> commandMethods = new ConcurrentHashMap<>();
 
     /** Map storing command names linked to the instance of the class containing the method. */
-    private final Map<String, Object> commandInstances = new HashMap<>();
+    private final Map<String, Object> commandInstances = new ConcurrentHashMap<>();
 
     /** Internal cache to ensure each class is only instantiated once. */
-    private final Map<Class<?>, Object> instanceCache = new HashMap<>();
+    private final Map<Class<?>, Object> instanceCache = new ConcurrentHashMap<>();
 
     /** Ensures that the listener for this scanner instance only gets registered once. */
     private boolean listenerRegistered = false;
@@ -89,7 +90,7 @@ public class SlashCommandScanner {
         validateMethodDeclaration(method);
 
         SlashCommand annotation = method.getAnnotation(SlashCommand.class);
-        String name = annotation.command();
+        String name = annotation.command().toLowerCase();
         String description = annotation.description();
         Class<?> declaringClass = method.getDeclaringClass();
         Option[] options = annotation.options();
