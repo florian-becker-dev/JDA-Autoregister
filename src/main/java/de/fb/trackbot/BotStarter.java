@@ -11,7 +11,7 @@ import java.util.EnumSet;
 
 public class BotStarter {
 
-    private static final String TOKEN = "";
+    private static final String TOKEN = "MTM0ODc2NzU4MzAwNDAwNDUwNA.GyPcJZ.qHrgLWzQB4QUk0fVTf96kcnmSJfNTs1H5asP14";
 
     public static void main(String[] args) {
         JDA jda = JDABuilder.createLight(TOKEN, EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))

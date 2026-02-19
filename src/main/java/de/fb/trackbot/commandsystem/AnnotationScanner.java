@@ -2,6 +2,7 @@ package de.fb.trackbot.commandsystem;
 
 import de.fb.trackbot.commandsystem.slashcommands.SlashCommandRegistrar;
 import de.fb.trackbot.commandsystem.slashcommands.subcommands.SubCommandRegistrar;
+import de.fb.trackbot.commandsystem.tasksystem.TaskRegistrar;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -42,7 +43,8 @@ public class AnnotationScanner {
      */
     private final List<FeatureRegistrar> features = List.of(
             new SubCommandRegistrar(),
-            new SlashCommandRegistrar()
+            new SlashCommandRegistrar(),
+            new TaskRegistrar()
     );
 
     /**
