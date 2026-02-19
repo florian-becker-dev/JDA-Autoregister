@@ -1,4 +1,4 @@
-package de.fb.trackbot.commandsystem;
+package de.fb.trackbot.commandsystem.slashcommands;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -9,7 +9,7 @@ import java.util.Objects;
  * <p>
  * This class serves as a template for developers to implement new commands.
  * Methods annotated with {@link SlashCommand} are automatically discovered
- * and registered by the {@link SlashCommandScanner}.
+ * and registered by the {@link SlashCommandRegistrar}.
  * </p>
  */
 public class ExampleSlashCommand {

@@ -1,5 +1,7 @@
-package de.fb.trackbot.commandsystem;
+package de.fb.trackbot.commandsystem.slashcommands;
 
+import de.fb.trackbot.commandsystem.CommandParserUtil;
+import de.fb.trackbot.commandsystem.FeatureRegistrar;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -7,8 +9,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
-import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,23 +17,27 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Automated scanner for Discord Slash Commands using Reflection.
+ * Automated registry for Discord Slash Commands.
  * <p>
- * This class identifies methods annotated with {@link SlashCommand} within the project
- * and automatically registers them to the Discord API via JDA. It also handles
- * the routing of incoming interaction events to their respective methods.
+ * This class implements {@link FeatureRegistrar} to identify methods annotated with
+ * {@link SlashCommand} via reflection and register them globally. It manages the
+ * lifecycle of slash command interactions, including registration, event routing,
+ * and cleanup.
  * </p>
- * <b>Requirements:</b>
+ * * <b>Requirements:</b>
  * <ul>
- * <li>Methods must be annotated with {@code @SlashCommand}</li>
- * <li>Methods must return {@code void}</li>
- * <li>Methods must accept exactly one parameter of type {@link SlashCommandInteractionEvent}</li>
- * <li>The declaring class must have a public no-args constructor</li>
+ * <li>Methods must be annotated with {@code @SlashCommand}.</li>
+ * <li>Methods must be {@code public} (for reflection access).</li>
+ * <li>Methods must return {@code void} and accept exactly one {@link SlashCommandInteractionEvent}.</li>
+ * <li>Declaring classes must provide a public no-args constructor.</li>
  * </ul>
+ * * <b>Lifecycle Management:</b>
+ * Use {@link #register(JDA, Reflections)} to initialize and {@link #shutdown(JDA)}
+ * to detach listeners and clear internal caches.
  */
-public class SlashCommandScanner {
+public class SlashCommandRegistrar implements FeatureRegistrar {
 
-    private final Logger logger = LoggerFactory.getLogger(SlashCommandScanner.class);
+    private final Logger logger = LoggerFactory.getLogger(SlashCommandRegistrar.class);
 
     /** Map storing command names linked to their executable Methods. */
     private final Map<String, Method> commandMethods = new ConcurrentHashMap<>();
@@ -47,24 +51,26 @@ public class SlashCommandScanner {
     /** Ensures that the listener for this scanner instance only gets registered once. */
     private boolean listenerRegistered = false;
 
+    private final SlashCommandListener listener = new SlashCommandListener();
+
     /**
-     * Scans the project for methods annotated with {@link SlashCommand}.
-     * Discovered commands are built and sent to Discord globally.
+     * Scans the project for {@link SlashCommand} annotations and synchronizes them with Discord.
+     * <p>
+     * Note: This method automatically attaches an internal {@link ListenerAdapter} to the
+     * JDA instance to handle command execution.
+     * </p>
      *
-     * @param jda The JDA instance used to register the commands and the listener.
-     * @throws IllegalStateException If an annotated method violates requirements or is called multiple times.
+     * @param jda         The active JDA instance for command registration.
+     * @param reflections The pre-scanned reflection metadata.
+     * @throws IllegalStateException If the registrar is already initialized or validation fails.
      */
-    public void registerMethods(JDA jda) {
+    @Override
+    public void register(JDA jda, Reflections reflections) {
         if (listenerRegistered) {
             throw new IllegalStateException("Methods for this scanner instance can only be registered once");
         }
 
         logger.debug("Starting global scan for SlashCommands");
-
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .forPackage("")
-                .addScanners(Scanners.MethodsAnnotated)
-        );
 
         Set<Method> annotatedMethods = reflections.getMethodsAnnotatedWith(SlashCommand.class);
         List<SlashCommandData> commandDataList = new ArrayList<>();
@@ -76,8 +82,33 @@ public class SlashCommandScanner {
                 error -> logger.error("JDA update failed", error)
         );
 
-        jda.addEventListener(new SlashCommandListener());
+        jda.addEventListener(listener);
         listenerRegistered = true;
+    }
+
+    /**
+     * Performs a clean shutdown of the registrar.
+     * <p>
+     * This removes the command listener from the JDA instance and clears all internal
+     * reflection caches (methods, instances) to prevent memory leaks and ensure
+     * a safe state for potential re-initialization.
+     * </p>
+     *
+     * @param jda The JDA instance to remove the listener from.
+     */
+    @Override
+    public void shutdown(JDA jda){
+        logger.info("shutting down SlashcommandRegistrar");
+
+        if(jda!= null){
+            jda.removeEventListener(listener);
+            logger.debug("SlashCommandListener removed successfully");
+        }
+        commandMethods.clear();
+        commandInstances.clear();
+        instanceCache.clear();
+        listenerRegistered = false;
+        logger.info("SlashCommandRegistrar stopped successfully");
     }
 
     /**
@@ -87,7 +118,8 @@ public class SlashCommandScanner {
      * @param commandDataList The list where the built {@link SlashCommandData} will be added.
      */
     private void registerCommand(Method method, List<SlashCommandData> commandDataList) {
-        validateMethodDeclaration(method);
+
+        CommandParserUtil.validateMethod(method);
 
         SlashCommand annotation = method.getAnnotation(SlashCommand.class);
         String name = annotation.command().toLowerCase();
@@ -108,7 +140,7 @@ public class SlashCommandScanner {
 
             SlashCommandData commandData = Commands.slash(name, description);
 
-            addOptionsToCommand(commandData, options);
+            commandData.addOptions(CommandParserUtil.parseOptions(options));
 
             commandDataList.add(commandData);
 
@@ -117,45 +149,6 @@ public class SlashCommandScanner {
         }
     }
 
-    /**
-     * Configures the command options and their respective choices for a Slash Command.
-     * <p>
-     * This method iterates through the {@link Option} annotations, converts them into
-     * JDA {@link OptionData}, and attaches any defined {@link Choice} values.
-     * </p>
-     * @param commandData The {@link SlashCommandData} instance to which the options are added.
-     * @param options     An array of {@link Option} annotations containing the option metadata.
-     * @throws IllegalArgumentException If an option type does not support choices but choices are provided.
-     */
-    private void addOptionsToCommand(SlashCommandData commandData, Option[] options) {
-        for (Option option : options) {
-            OptionData optionData =
-                    new OptionData(
-                            option.optionType(),
-                            option.name(),
-                            option.description(),
-                            option.required()
-                    );
-
-            for (Choice choice : option.choices()) {
-               ChoiceParser.parseChoice(option.optionType(),choice,optionData);
-            }
-
-            commandData.addOptions(optionData);
-        }
-    }
-
-    /**
-     * Validates that the annotated method meets all requirements for a Slash Command.
-     */
-    private void validateMethodDeclaration(Method method) {
-        if (!method.getReturnType().equals(void.class))
-            throw new IllegalStateException("Method " + method.getName() + " must return void");
-
-        Class<?>[] params = method.getParameterTypes();
-        if (params.length != 1 || !params[0].equals(SlashCommandInteractionEvent.class))
-            throw new IllegalStateException("Method " + method.getName() + " must have exactly one parameter of type SlashCommandInteractionEvent");
-    }
 
     /**
      * Internal listener that intercepts Discord interactions and invokes

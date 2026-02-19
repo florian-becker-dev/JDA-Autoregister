@@ -1,4 +1,4 @@
-package de.fb.trackbot.commandsystem;
+package de.fb.trackbot.commandsystem.slashcommands;
 
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
