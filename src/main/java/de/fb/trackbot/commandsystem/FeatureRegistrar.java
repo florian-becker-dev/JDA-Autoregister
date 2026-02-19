@@ -2,8 +2,11 @@ package de.fb.trackbot.commandsystem;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.reflections.Reflections;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -44,4 +47,8 @@ public interface FeatureRegistrar {
      *  @param jda The JDA instance to detach listeners from.
      */
     void shutdown(JDA jda);
+
+    default List<SlashCommandData> getCommands(){
+        return Collections.emptyList();
+    }
 }

@@ -53,6 +53,8 @@ public class SlashCommandRegistrar implements FeatureRegistrar {
 
     private final SlashCommandListener listener = new SlashCommandListener();
 
+    private List<SlashCommandData> commands = Collections.emptyList();
+
     /**
      * Scans the project for {@link SlashCommand} annotations and synchronizes them with Discord.
      * <p>
@@ -77,11 +79,7 @@ public class SlashCommandRegistrar implements FeatureRegistrar {
 
         annotatedMethods.forEach(method -> registerCommand(method, commandDataList));
 
-        jda.updateCommands().addCommands(commandDataList).queue(
-                success -> logger.info("{} Commands successfully registered", commandMethods.size()),
-                error -> logger.error("JDA update failed", error)
-        );
-
+        commands = commandDataList;
         jda.addEventListener(listener);
         listenerRegistered = true;
     }
@@ -149,6 +147,10 @@ public class SlashCommandRegistrar implements FeatureRegistrar {
         }
     }
 
+    @Override
+    public List<SlashCommandData> getCommands(){
+        return commands;
+    }
 
     /**
      * Internal listener that intercepts Discord interactions and invokes

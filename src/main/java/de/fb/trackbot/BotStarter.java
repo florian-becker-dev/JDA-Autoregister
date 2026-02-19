@@ -1,16 +1,13 @@
 package de.fb.trackbot;
 
-import de.fb.trackbot.commandsystem.slashcommands.Choice;
-import de.fb.trackbot.commandsystem.slashcommands.Option;
-import de.fb.trackbot.commandsystem.slashcommands.SlashCommand;
+
+import de.fb.trackbot.commandsystem.AnnotationScanner;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.util.EnumSet;
-import java.util.Objects;
+
 
 public class BotStarter {
 
@@ -20,20 +17,9 @@ public class BotStarter {
         JDA jda = JDABuilder.createLight(TOKEN, EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
                 .build();
 
-    }
+        AnnotationScanner annotationScanner = new AnnotationScanner(jda);
+        annotationScanner.registerFeatures();
 
-    @SlashCommand(
-            command = "ping",
-            description = "returns pong",
-            options = {
-                    @Option(name = "olaf", description = "OLF", optionType = OptionType.STRING,
-                            choices = {
-                                @Choice(name = "Name", value = "Value"),
-                                @Choice(name = "Rüdiger", value = "2")
-                        })
-            })
-    public void nio(SlashCommandInteractionEvent event){
-        String a = Objects.requireNonNull(event.getOption("olaf")).getAsString();
     }
 
 }

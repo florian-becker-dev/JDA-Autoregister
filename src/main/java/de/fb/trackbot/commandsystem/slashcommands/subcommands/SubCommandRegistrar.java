@@ -52,6 +52,8 @@ public class SubCommandRegistrar implements FeatureRegistrar {
     /** Ensures that the listener for this registrar instance only gets registered once. */
     private boolean isRegistered = false;
 
+    List<SlashCommandData> commands = Collections.emptyList();
+
     /**
      * Scans the project for {@link SlashCommandGroup} and {@link SubCommand} annotations.
      * The resulting command trees are built and synchronized globally with Discord.
@@ -74,14 +76,14 @@ public class SubCommandRegistrar implements FeatureRegistrar {
         for (Class<?> clazz : groupClasses) {
             groupDataList.add(parseGroup(clazz));
         }
-
-        jda.updateCommands().addCommands(groupDataList).queue(
-                success -> logger.info("Successfully registered {} Subcommand Groups", groupDataList.size()),
-                error -> logger.error("JDA update for Subcommands failed", error)
-        );
-
+        commands = groupDataList;
         jda.addEventListener(listener);
         isRegistered = true;
+    }
+
+    @Override
+    public List<SlashCommandData> getCommands(){
+        return commands;
     }
 
     /**

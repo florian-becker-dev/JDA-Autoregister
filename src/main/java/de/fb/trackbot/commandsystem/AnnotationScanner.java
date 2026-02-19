@@ -3,11 +3,16 @@ package de.fb.trackbot.commandsystem;
 import de.fb.trackbot.commandsystem.slashcommands.SlashCommandRegistrar;
 import de.fb.trackbot.commandsystem.slashcommands.subcommands.SubCommandRegistrar;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Central orchestrator for the command and logic registration system.
@@ -30,12 +35,14 @@ public class AnnotationScanner {
 
     private final JDA jda;
 
+    private final Logger logger = LoggerFactory.getLogger(AnnotationScanner.class);
+
     /** * List of active registrars that define the bot's capabilities.
      * To extend the framework (e.g., with a TaskSystem), add new implementations here.
      */
     private final List<FeatureRegistrar> features = List.of(
-            new SlashCommandRegistrar(),
-            new SubCommandRegistrar()
+            new SubCommandRegistrar(),
+            new SlashCommandRegistrar()
     );
 
     /**
@@ -62,6 +69,15 @@ public class AnnotationScanner {
         );
 
         features.forEach(featureRegistrar -> featureRegistrar.register(jda, methodReflections));
+
+       List<SlashCommandData> allCommands =  features.stream()
+               .flatMap(f -> f.getCommands().stream())
+               .collect(Collectors.toList());
+
+       jda.updateCommands().addCommands(allCommands).queue(
+               success -> logger.info("successfully registered {} commands", allCommands.size()),
+               error -> logger.error("Failed to register Commands", error)
+       );
     }
 
     /**
