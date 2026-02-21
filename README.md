@@ -101,16 +101,16 @@ public class SubCommandsExample {
 ```
 
 ### 4. Background Tasks 
-Automate recurring tasks by annotating a Method 
+Automate recurring tasks by annotating a Method. 
 
 ```java
-public class TestTask {
-    @Task(hour = 20) // Executes every day at 20:00
-    public void test(){
-        System.out.println("Daily task executed successfully!");
-    }
+@Task(hour = 20, minutes = 30, weekdays = {DayOfWeek.MONDAY})
+public void sendUpdate() {
+    System.out.println("This update runs every Monday at 20:30");
 }
 ```
+You can specify
+
 ---
 
 ## Java Module System (Jigsaw)
