@@ -23,7 +23,7 @@ Add the following to the `pom.xml` of your **Bot Project**:
 <repositories>
     <repository>
         <id>jitpack.io</id>
-        <url>[https://jitpack.io](https://jitpack.io)</url>
+        <url>https://jitpack.io</url>
     </repository>
 </repositories>
 ```
@@ -32,7 +32,7 @@ Add the following to the `pom.xml` of your **Bot Project**:
 <dependency>
 	    <groupId>com.github.florian-becker-dev</groupId>
 	    <artifactId>JDA-Autoregister</artifactId>
-	    <version>v1.0.0</version>
+	    <version>v1.0.1</version>
 	</dependency>
 ```
 ---
