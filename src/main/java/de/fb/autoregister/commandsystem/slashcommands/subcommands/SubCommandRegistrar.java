@@ -1,8 +1,10 @@
-package de.fb.trackbot.commandsystem.slashcommands.subcommands;
+package de.fb.autoregister.commandsystem.slashcommands.subcommands;
 
-import de.fb.trackbot.commandsystem.CommandParserUtil;
-import de.fb.trackbot.commandsystem.FeatureRegistrar;
-import de.fb.trackbot.commandsystem.slashcommands.Option;
+import de.fb.autoregister.commandsystem.CommandParserUtil;
+import de.fb.autoregister.commandsystem.FeatureRegistrar;
+import de.fb.autoregister.commandsystem.api.slashcommands.Option;
+import de.fb.autoregister.commandsystem.api.slashcommands.subcommands.SlashCommandGroup;
+import de.fb.autoregister.commandsystem.api.slashcommands.subcommands.SubCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;

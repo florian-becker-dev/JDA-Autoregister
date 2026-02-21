@@ -1,12 +1,13 @@
-package de.fb.trackbot.commandsystem.slashcommands;
+package de.fb.autoregister.commandsystem.slashcommands;
 
-import de.fb.trackbot.commandsystem.CommandParserUtil;
-import de.fb.trackbot.commandsystem.FeatureRegistrar;
+import de.fb.autoregister.commandsystem.CommandParserUtil;
+import de.fb.autoregister.commandsystem.FeatureRegistrar;
+import de.fb.autoregister.commandsystem.api.slashcommands.Option;
+import de.fb.autoregister.commandsystem.api.slashcommands.SlashCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.reflections.Reflections;
 import org.slf4j.Logger;

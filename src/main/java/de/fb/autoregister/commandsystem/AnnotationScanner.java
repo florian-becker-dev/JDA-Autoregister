@@ -1,11 +1,10 @@
-package de.fb.trackbot.commandsystem;
+package de.fb.autoregister.commandsystem;
 
-import de.fb.trackbot.commandsystem.slashcommands.SlashCommandRegistrar;
-import de.fb.trackbot.commandsystem.slashcommands.subcommands.SubCommandRegistrar;
-import de.fb.trackbot.commandsystem.tasksystem.TaskRegistrar;
+import de.fb.autoregister.commandsystem.slashcommands.SlashCommandRegistrar;
+import de.fb.autoregister.commandsystem.slashcommands.subcommands.SubCommandRegistrar;
+import de.fb.autoregister.commandsystem.tasksystem.TaskRegistrar;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;

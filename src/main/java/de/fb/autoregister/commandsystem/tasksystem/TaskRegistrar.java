@@ -1,6 +1,7 @@
-package de.fb.trackbot.commandsystem.tasksystem;
+package de.fb.autoregister.commandsystem.tasksystem;
 
-import de.fb.trackbot.commandsystem.FeatureRegistrar;
+import de.fb.autoregister.commandsystem.FeatureRegistrar;
+import de.fb.autoregister.commandsystem.api.tasksystem.Task;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.reflections.Reflections;

@@ -1,4 +1,4 @@
-package de.fb.trackbot.commandsystem;
+package de.fb.autoregister.commandsystem;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.EventListener;

@@ -1,8 +1,8 @@
-package de.fb.trackbot.commandsystem;
+package de.fb.autoregister.commandsystem;
 
-import de.fb.trackbot.commandsystem.slashcommands.Choice;
-import de.fb.trackbot.commandsystem.slashcommands.ChoiceParser;
-import de.fb.trackbot.commandsystem.slashcommands.Option;
+import de.fb.autoregister.commandsystem.api.slashcommands.Choice;
+import de.fb.autoregister.commandsystem.slashcommands.ChoiceParser;
+import de.fb.autoregister.commandsystem.api.slashcommands.Option;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 

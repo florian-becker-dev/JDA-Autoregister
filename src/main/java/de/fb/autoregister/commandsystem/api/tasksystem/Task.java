@@ -1,4 +1,4 @@
-package de.fb.trackbot.commandsystem.tasksystem;
+package de.fb.autoregister.commandsystem.api.tasksystem;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

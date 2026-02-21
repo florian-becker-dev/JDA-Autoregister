@@ -1,4 +1,4 @@
-package de.fb.trackbot.commandsystem.slashcommands;
+package de.fb.autoregister.commandsystem.api.slashcommands;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
