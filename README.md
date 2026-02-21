@@ -25,7 +25,7 @@ Add the following to the `pom.xml` of your **Bot Project**:
         <id>jitpack.io</id>
         <url>[https://jitpack.io](https://jitpack.io)</url>
     </repository>
-</repositories>**
+</repositories>
 ```
 ### 2. Add the Dependency 
 ```xml
