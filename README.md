@@ -23,7 +23,7 @@ Add the following to the `pom.xml` of your **Bot Project**:
 <repositories>
     <repository>
         <id>jitpack.io</id>
-        <url>[https://jitpack.io](https://jitpack.io)</url>
+        <url>https://jitpack.io</url>
     </repository>
 </repositories>
 ```
@@ -32,7 +32,7 @@ Add the following to the `pom.xml` of your **Bot Project**:
 <dependency>
 	    <groupId>com.github.florian-becker-dev</groupId>
 	    <artifactId>JDA-Autoregister</artifactId>
-	    <version>v1.0.0</version>
+	    <version>v1.0.1</version>
 	</dependency>
 ```
 ---
@@ -101,16 +101,16 @@ public class SubCommandsExample {
 ```
 
 ### 4. Background Tasks 
-Automate recurring tasks by annotating a Method 
+Automate recurring tasks by annotating a Method. 
 
 ```java
-public class TestTask {
-    @Task(hour = 20) // Executes every day at 20:00
-    public void test(){
-        System.out.println("Daily task executed successfully!");
-    }
+@Task(hour = 20, minutes = 30, weekdays = {DayOfWeek.MONDAY})
+public void sendUpdate() {
+    System.out.println("This update runs every Monday at 20:30");
 }
 ```
+You can specify
+
 ---
 
 ## Java Module System (Jigsaw)
