@@ -6,7 +6,8 @@
 
   <groupId>de.fb</groupId>
   <artifactId>JDA-Autoregister</artifactId>
-  <version>1.0.2</version> <packaging>jar</packaging>
+  <version>1.0.3</version>
+  <packaging>jar</packaging>
 
   <name>JDA-Autoregister</name>
   <description>A lightweight, annotation-based framework for automatic registration of commands and tasks in JDA.</description>
@@ -24,26 +25,22 @@
       <artifactId>JDA</artifactId>
       <version>${jda.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
       <version>0.10.2</version>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>2.0.12</version>
     </dependency>
-
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.5.13</version>
       <optional>true</optional>
     </dependency>
-
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -66,6 +63,19 @@
         <version>3.13.0</version>
         <configuration>
           <release>21</release>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>de.fb.jda.autoregister</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
         </configuration>
       </plugin>
 
@@ -102,7 +112,10 @@
           </execution>
         </executions>
         <configuration>
-          <doclint>none</doclint> <release>21</release>
+          <release>21</release>
+          <doclint>none</doclint>
+          <sourcepath>src/main/java</sourcepath>
+          <detectJavaApiLink>true</detectJavaApiLink>
         </configuration>
       </plugin>
     </plugins>
