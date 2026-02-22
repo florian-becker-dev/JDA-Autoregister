@@ -1,0 +1,9 @@
+module:JDA.Autoregister
+de.fb.autoregister.commandsystem
+de.fb.autoregister.commandsystem.api
+de.fb.autoregister.commandsystem.api.slashcommands
+de.fb.autoregister.commandsystem.api.slashcommands.subcommands
+de.fb.autoregister.commandsystem.api.tasksystem
+de.fb.autoregister.commandsystem.slashcommands
+de.fb.autoregister.commandsystem.slashcommands.subcommands
+de.fb.autoregister.commandsystem.tasksystem
